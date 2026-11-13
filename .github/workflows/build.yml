@@ -1,4 +1,4 @@
-name: Build 2ELAGPT
+name: Build 2ELAGPT Android APK
 on:
   push:
     branches: [main]
@@ -15,10 +15,27 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm install
-      - run: npm run build
-      - uses: actions/upload-artifact@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
         with:
-          name: 2ELAGPT-web-v1
-          path: dist/
+          distribution: temurin
+          java-version: '17'
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Install dependencies
+        run: npm install
+      - name: Build web app
+        run: npm run build
+      - name: Generate Android project
+        run: npx cap add android
+      - name: Sync web app into Android
+        run: npx cap sync android
+      - name: Build debug APK
+        working-directory: android
+        run: ./gradlew assembleDebug
+      - name: Upload installable APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: 2ELAGPT-Android-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
