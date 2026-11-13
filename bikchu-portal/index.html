@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f7f0df">
+<title>BIKCHU Apps & Services — Let's build your idea</title>
+<meta name="description" content="Friendly custom app development. Tell BIKCHU about your idea and receive a project quote.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f7f0df;--cream:#fffaf0;--ink:#302d27;--muted:#777064;--green:#55745b;--sage:#dce8d7;--line:#d8cfbb}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:var(--paper);background-image:radial-gradient(#d8cfbb .8px,transparent .8px);background-size:18px 18px;font:23px "VT323",monospace}.wrap{width:min(1080px,calc(100% - 36px));margin:auto}
+header{display:flex;justify-content:space-between;align-items:center;padding:25px 0;gap:20px}.brand{font:10px/1.9 "Press Start 2P"}.brand span{color:var(--green)}nav{display:flex;gap:22px;flex-wrap:wrap}a{color:inherit}nav a{text-decoration:none}nav a:hover{color:var(--green)}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:35px;align-items:center;padding:70px 0 60px}.eyebrow{font:9px/2 "Press Start 2P";color:var(--green)}h1{font:clamp(25px,4vw,43px)/1.55 "Press Start 2P";margin:20px 0}h1 em{font-style:normal;color:var(--green)}.lead{font-size:29px;line-height:1.2;color:#625d52;max-width:570px}
+.btn{display:inline-block;border:2px solid var(--ink);background:var(--green);color:white;padding:14px 18px;box-shadow:4px 4px var(--ink);font:9px/1.8 "Press Start 2P";text-decoration:none;cursor:pointer}.btn:hover{transform:translate(2px,2px);box-shadow:2px 2px var(--ink)}.pixel-art{min-height:285px;background:var(--sage);border:2px solid var(--ink);box-shadow:5px 5px var(--ink);display:grid;place-items:center;text-align:center}.pixel-art .emoji{font-size:100px}.pixel-art small{display:block;color:var(--green);font-size:21px}
+section{padding:45px 0}.section-head{text-align:center;margin-bottom:28px}.section-head h2,.about h2{font:13px/2 "Press Start 2P";margin:0 0 10px}.section-head p{margin:0;color:var(--muted);font-size:25px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{background:var(--cream);border:2px solid var(--ink);padding:22px;box-shadow:4px 4px var(--line)}.card.featured{background:#edf2e5;box-shadow:5px 5px var(--green);transform:translateY(-5px)}.tag{font:8px/2 "Press Start 2P";color:var(--green)}.card h3{font:11px/1.8 "Press Start 2P"}.price{font-size:46px;margin:6px 0}.card p,.card li{color:var(--muted)}.card ul{padding-left:20px;line-height:1.25}.note{text-align:center;color:var(--muted);font-size:20px;margin-top:24px}
+.about{background:#fffaf0bb;border-block:2px dashed var(--line);text-align:center}.about p{max-width:740px;margin:12px auto;color:#625d52;font-size:27px;line-height:1.2}
+.form-card{max-width:760px;margin:auto;padding:26px;background:var(--cream);border:2px solid var(--ink);box-shadow:5px 5px var(--ink)}label{display:block;margin:14px 0 5px}input,select,textarea{width:100%;padding:12px;border:2px solid var(--line);background:#fffdf7;color:var(--ink);font:22px "VT323";border-radius:0}textarea{min-height:130px;resize:vertical}.hint{font-size:18px;color:var(--muted);margin:5px 0}.status{min-height:26px;color:var(--green)}.hp{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
+footer{text-align:center;padding:35px 0 45px;color:var(--muted);font-size:20px}footer strong{color:var(--green)}
+@media(max-width:740px){header{align-items:flex-start;flex-direction:column}.hero{grid-template-columns:1fr;padding:40px 0}.cards{grid-template-columns:1fr}.card.featured{transform:none}.pixel-art{min-height:210px}h1{font-size:25px}.section-head h2,.about h2{font-size:11px}}
+</style>
+</head>
+<body>
+<header class="wrap"><div class="brand">BIKCHU <span>APPS</span><br>&amp; SERVICES</div><nav><a href="#pricing">Pricing</a><a href="#about">About</a><a href="#request">Request a project</a><a href="admin.html">Owner login</a></nav></header>
+<main>
+<div class="wrap hero"><div><div class="eyebrow">✦ SMALL STUDIO · BIG IDEAS ✦</div><h1>Your idea.<br>Our <em>pixels.</em></h1><p class="lead">Have an app idea? Tell us what you're imagining. We'll review it, work out what's possible, and send you a price before any work begins.</p><a class="btn" href="#request">START A PROJECT →</a></div><div class="pixel-art"><div><div class="emoji">☕🌱</div><small>crafted with care ♡</small></div></div></div>
+<section id="pricing" class="wrap"><div class="section-head"><h2>OUR STARTING PRICES</h2><p>Pick a starting point. We'll confirm the exact scope first.</p></div><div class="cards">
+<article class="card"><div class="tag">01 / STARTER</div><h3>BASIC APP</h3><div class="price">$10</div><p>Simple ideas with one main purpose.</p><ul><li>Simple app layout</li><li>One core feature</li><li>Basic styling</li></ul></article>
+<article class="card featured"><div class="tag">02 / POPULAR</div><h3>ADVANCED APP</h3><div class="price">$30</div><p>More features and a more custom experience.</p><ul><li>Custom interface</li><li>Multiple features</li><li>Responsive design</li></ul></article>
+<article class="card"><div class="tag">03 / FULL BUILD</div><h3>PRO APP</h3><div class="price">$50</div><p>Bigger builds with a broader feature set.</p><ul><li>Complete app experience</li><li>Advanced features</li><li>Testing and refinements</li></ul></article>
+</div><p class="note">Prices are starting estimates, not a guaranteed price for every project. We'll send a quote for approval first.</p></section>
+<section id="about" class="about"><div class="wrap"><div class="eyebrow">A LITTLE ABOUT US</div><h2>SMALL STUDIO. BIG POSSIBILITIES.</h2><p>BIKCHU Apps and Services is a creative little app studio focused on turning ideas into useful, friendly digital experiences — one carefully built project at a time.</p></div></section>
+<section id="request" class="wrap"><div class="section-head"><h2>TELL US YOUR IDEA</h2><p>Send a project request. We'll review it and get back to you with a quote.</p></div>
+<form class="form-card" id="requestForm">
+<div class="hp" aria-hidden="true"><label for="website">Leave this empty</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
+<label for="name">Your name *</label><input id="name" name="name" maxlength="100" required placeholder="What should we call you?">
+<label for="email">Email address *</label><input id="email" name="email" type="email" maxlength="254" required placeholder="you@example.com">
+<label for="package">Which package interests you?</label><select id="package" name="package"><option>Basic App — $10</option><option>Advanced App — $30</option><option>Pro App — $50</option><option>Not sure yet</option></select>
+<label for="budget">Budget (optional)</label><input id="budget" name="budget" maxlength="80" placeholder="e.g. $20–$50">
+<label for="idea">Describe your app idea *</label><textarea id="idea" name="idea" minlength="15" maxlength="5000" required placeholder="What should the app do? Which features would you like?"></textarea><p class="hint">Please don't include passwords, payment details, or private information in your description.</p>
+<button class="btn" id="sendBtn" type="submit">SUBMIT PROJECT REQUEST →</button><p class="status" id="status" role="status" aria-live="polite">No payment is taken here. We'll review your request and confirm a quote first.</p>
+</form></section>
+</main><footer><div class="wrap"><strong>BIKCHU APPS AND SERVICES</strong><br>Cozy pixels. Thoughtful builds. ♡<br>© <span id="year"></span> BIKCHU</div></footer>
+<script>
+document.getElementById("year").textContent=new Date().getFullYear();
+const form=document.getElementById("requestForm"),status=document.getElementById("status"),button=document.getElementById("sendBtn");
+form.addEventListener("submit",async e=>{e.preventDefault();button.disabled=true;button.textContent="SENDING...";status.textContent="Sending your project request securely…";
+const data=Object.fromEntries(new FormData(form).entries());
+try{const response=await fetch("/api/requests",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});const result=await response.json();if(!response.ok)throw new Error(result.error||"Couldn't submit your request.");form.reset();status.textContent="Request received! Your reference number is #"+result.requestId+". BIKCHU will review your idea and confirm a quote.";status.scrollIntoView({behavior:"smooth",block:"nearest"});}
+catch(err){status.textContent=err.message+" If this keeps happening, please try again later.";}
+finally{button.disabled=false;button.textContent="SUBMIT PROJECT REQUEST →";}
+});
+</script>
+</body></html>
