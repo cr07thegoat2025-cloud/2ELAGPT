@@ -1,10 +1,10 @@
 from pathlib import Path
-import subprocess
+import cairosvg
 from PIL import Image
 
 root = Path("android/app/src/main/res")
 tmp = Path("/tmp/2elagpt-banana-icon.png")
-subprocess.run(["rsvg-convert", "-w", "1024", "-h", "1024", "assets/banana-app-icon.svg", "-o", str(tmp)], check=True)
+cairosvg.svg2png(url="assets/banana-app-icon.svg", write_to=str(tmp), output_width=1024, output_height=1024)
 image = Image.open(tmp).convert("RGBA")
 sizes = {"mdpi":48, "hdpi":72, "xhdpi":96, "xxhdpi":144, "xxxhdpi":192}
 for density, size in sizes.items():
