@@ -6,7 +6,7 @@ on:
     branches: [main]
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -36,7 +36,17 @@ jobs:
       - name: Build installable debug APK
         working-directory: android
         run: ./gradlew assembleDebug
-      - name: Upload APK
+      - name: Publish latest APK release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: 2ELAGPT Latest
+          body: Latest automatically built Android APK for 2ELAGPT.
+          files: android/app/build/outputs/apk/debug/app-debug.apk
+          overwrite_files: true
+          make_latest: true
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: 2ELAGPT-Android-APK
