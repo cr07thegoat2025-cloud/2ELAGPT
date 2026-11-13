@@ -1,51 +1,47 @@
 # 2ELAGPT V1
 **Your intelligence. Without limits.**
 
-A React + Capacitor AI assistant with a custom Cloudflare Worker API. Supabase has been removed.
+A React + Capacitor AI assistant with a Vercel serverless API. Supabase and Cloudflare are not required.
 
 ## Architecture
 - Android/web app: React + Vite + Capacitor
-- API: Cloudflare Worker in `worker/src/index.js`
-- Primary model: Gemini 2.5 Flash
-- Fallback: OpenRouter `openrouter/free`
+- API: Vercel Node.js Function at `/api/chat`
+- AI provider: OpenRouter (uses the `openrouter/free` router by default)
 - Streaming: Server-Sent Events
 - Chat history: stored locally on the device/browser
 - Coding mode: specialist programming system prompt
 
-## 1. Deploy the custom API
-1. Create a Cloudflare account and install Wrangler: `npm install`.
-2. From the repository root run `npx wrangler login`.
-3. Add provider keys as Worker secrets (never commit them):
-   ```sh
-   npx wrangler secret put GEMINI_API_KEY
-   npx wrangler secret put OPENROUTER_API_KEY
-   ```
-   Add at least one provider key. Gemini is used first in Auto mode; OpenRouter is the fallback when Gemini returns an HTTP error.
-4. Deploy:
-   ```sh
-   npx wrangler deploy
-   ```
-5. Copy the Worker URL, usually `https://2elagpt-api.<your-subdomain>.workers.dev`.
+## 1. Deploy to Vercel
+1. Sign in at https://vercel.com using GitHub.
+2. Import `cr07thegoat2025-cloud/2ELAGPT`.
+3. Keep the default project settings. Vercel should detect the Vite app and use the repository's `vercel.json`.
+4. In the Vercel project, open **Settings → Environment Variables**.
+5. Add:
+   - Name: `OPENROUTER_API_KEY`
+   - Value: your OpenRouter API key
+   - Environments: Production, Preview, and Development (or at least Production)
+6. Save the variable, then redeploy from **Deployments → Redeploy** (or push a new commit).
+7. Test `https://YOUR-PROJECT.vercel.app/api/chat` with a POST request. A GET request may return a method-not-allowed response; that is expected.
 
-Free-tier access, model availability, quotas, and pricing can change. Check each provider dashboard before use. The API gateway itself does not create free model inference.
+Never commit the API key or put it in the Android app. If a key was ever pasted into a public repo or chat, rotate it in OpenRouter.
 
 ## 2. Connect the Android app
-Open 2ELAGPT > API setup and paste the Worker URL. The app saves it on the device. Do not paste provider keys into the app.
+Open 2ELAGPT → API setup and paste only the Vercel project URL, e.g. `https://your-project.vercel.app`. Do not paste the OpenRouter key into the app.
 
 ## 3. Build the APK
-Every push to `main` builds an Android debug APK in GitHub Actions. Open the latest successful run:
+Every push to `main` builds an Android debug APK in GitHub Actions. Open:
 https://github.com/cr07thegoat2025-cloud/2ELAGPT/actions
-Download the `2ELAGPT-Android-APK` artifact and extract the APK from the ZIP.
+Download the `2ELAGPT-Android-APK` artifact and extract the APK from its ZIP.
 
 ## API contract
-`POST /chat`, JSON body:
+`POST /api/chat`, JSON body:
 ```json
-{ "model": "auto", "mode": "coding", "messages": [{ "role": "user", "content": "Hello 2ELAGPT" }] }
+{ "model": "openrouter/free", "mode": "coding", "messages": [{ "role": "user", "content": "Hello 2ELAGPT" }] }
 ```
-Supported model choices: `auto`, `gemini-2.5-flash`, `openrouter/free`. Response is SSE with OpenAI-style `choices[0].delta.content` chunks.
+Response is SSE with OpenAI-style `choices[0].delta.content` chunks.
 
 ## Security and limitations
-- Provider keys are stored as Cloudflare Worker secrets and are not bundled into the app.
-- The Worker endpoint is public and this starter version has no account-based authentication or persistent cross-device chat sync. Add Cloudflare rate limiting/abuse protection before public release.
-- Chat history is local to each device/browser.
-- Do not commit API keys, tokens, or local environment files.
+- The OpenRouter key is read only from the Vercel server environment variable `OPENROUTER_API_KEY`; it is never bundled into the APK.
+- The API route is publicly reachable. Add Vercel protection/rate limits or authentication before a broad public launch to prevent abuse.
+- OpenRouter's free-model availability, quotas, rate limits, and model routing can change. A free router does not guarantee uninterrupted free inference.
+- Chat history is local to each device/browser; there is no account sync.
