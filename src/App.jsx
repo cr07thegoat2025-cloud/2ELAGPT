@@ -24,6 +24,7 @@ export default function App() {
   const [activeId, setActiveId] = useState(null);
   const [input, setInput] = useState("");
   const [model, setModel] = useState("auto");
+  const [codingMode, setCodingMode] = useState(false);
   const [modelOpen, setModelOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -103,7 +104,7 @@ export default function App() {
       const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": "Bearer " + (session?.access_token || supabaseAnonKey), "apikey": supabaseAnonKey },
-        body: JSON.stringify({ messages: next.filter(m => m.id !== "welcome").map(({ role, content }) => ({ role, content })), model }),
+        body: JSON.stringify({ messages: next.filter(m => m.id !== "welcome").map(({ role, content }) => ({ role, content })), model, mode: codingMode ? "coding" : "auto" }),
         signal: controller.signal
       });
       if (!response.ok) {
@@ -160,7 +161,7 @@ export default function App() {
       </div>
     </aside>
     <main className="main-panel">
-      <header className="topbar"><div className="top-left"><button className="icon-btn" onClick={() => setSidebarOpen(!sidebarOpen)} aria-label="Toggle sidebar"><Menu size={19}/></button><span className="top-brand">2ELA<span>GPT</span></span><div className="model-wrap"><button className="model-button" onClick={() => setModelOpen(!modelOpen)}> {model === "auto" ? "Auto" : model} <ChevronDown size={14}/></button>{modelOpen && <div className="model-menu"><button onClick={() => {setModel("auto");setModelOpen(false)}}><Sparkles size={15}/> Auto <small>Recommended</small></button><button onClick={() => {setModel("gemini-2.5-flash");setModelOpen(false)}}><Bot size={15}/> Gemini Flash</button><button onClick={() => {setModel("openrouter/free");setModelOpen(false)}}><Zap size={15}/> OpenRouter Free</button></div>}</div></div><div className="top-actions"><span className="provider-label"><i/> {provider}</span><button className="upgrade-btn" onClick={() => setSettingsOpen(true)}>API setup</button></div></header>
+      <header className="topbar"><div className="top-left"><button className="icon-btn" onClick={() => setSidebarOpen(!sidebarOpen)} aria-label="Toggle sidebar"><Menu size={19}/></button><span className="top-brand">2ELA<span>GPT</span></span><button className={"model-button " + (codingMode ? "coding-active" : "")} onClick={() => setCodingMode(v => !v)} title="Toggle specialist coding mode">{codingMode ? "{ } Coding ON" : "{ } Coding"}</button><div className="model-wrap"><button className="model-button" onClick={() => setModelOpen(!modelOpen)}> {model === "auto" ? "Auto" : model} <ChevronDown size={14}/></button>{modelOpen && <div className="model-menu"><button onClick={() => {setModel("auto");setModelOpen(false)}}><Sparkles size={15}/> Auto <small>Recommended</small></button><button onClick={() => {setModel("gemini-2.5-flash");setModelOpen(false)}}><Bot size={15}/> Gemini Flash</button><button onClick={() => {setModel("openrouter/free");setModelOpen(false)}}><Zap size={15}/> OpenRouter Free</button></div>}</div></div><div className="top-actions"><span className="provider-label"><i/> {provider}</span><button className="upgrade-btn" onClick={() => setSettingsOpen(true)}>API setup</button></div></header>
       <section className="chat-scroll">
         {messages.length === 1 && messages[0].id === "welcome" ? <div className="welcome"><div className="welcome-orb"><Sparkles size={27}/></div><div className="eyebrow">A NEW KIND OF ASSISTANT</div><h1>Your intelligence.<br/><em>Without limits.</em></h1><p>Ideas in. Possibilities out. Meet your new thinking partner.</p><div className="suggestion-grid">{suggestions.map(([icon, label]) => <button key={label} onClick={() => setInput(label)}><span>{icon === "Code" ? "{ }" : icon === "Pen" ? "✎" : icon === "Rocket" ? "↗" : "✧"}</span>{label}<ArrowUp size={14}/></button>)}</div></div> :
         <div className="messages">{messages.filter(m => m.id !== "welcome").map(m => <article className={"message " + m.role} key={m.id}><div className="message-avatar">{m.role === "assistant" ? <div className="mini-mark">2</div> : (session?.user?.email?.[0]?.toUpperCase() || "Y")}</div><div className="message-body"><div className="message-name">{m.role === "assistant" ? "2ELAGPT" : "You"}</div><div className="markdown"><ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content || (busy ? " " : "")}</ReactMarkdown></div>{m.role === "assistant" && m.content && <button className="copy-btn" onClick={() => navigator.clipboard?.writeText(m.content)}><Copy size={13}/> Copy</button>}</div></article>)}{busy && <div className="thinking"><span/><span/><span/> 2ELAGPT is thinking</div>}<div ref={endRef}/></div>}
