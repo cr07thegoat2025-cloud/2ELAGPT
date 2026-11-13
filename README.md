@@ -1,50 +1,51 @@
 # 2ELAGPT V1
 **Your intelligence. Without limits.**
 
-A responsive React chat app with a custom Supabase Edge Function API, Gemini primary routing, OpenRouter fallback, streaming responses, Supabase Auth, chat history, and row-level security.
+A React + Capacitor AI assistant with a custom Cloudflare Worker API. Supabase has been removed.
 
-## Stack
-- React + Vite frontend
-- Supabase Auth, Postgres and Edge Functions
-- Gemini 2.5 Flash primary
-- OpenRouter `openrouter/free` fallback
-- Server-side provider secrets (never ship provider keys to the browser)
+## Architecture
+- Android/web app: React + Vite + Capacitor
+- API: Cloudflare Worker in `worker/src/index.js`
+- Primary model: Gemini 2.5 Flash
+- Fallback: OpenRouter `openrouter/free`
+- Streaming: Server-Sent Events
+- Chat history: stored locally on the device/browser
+- Coding mode: specialist programming system prompt
 
-## Setup
-1. Create a Supabase project at https://supabase.com.
-2. In Supabase SQL Editor, run `supabase/migrations/001_init.sql`.
-3. In Authentication > Providers, enable Email. Configure email confirmation as desired.
-4. Copy `.env.example` to `.env.local`, then set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
-5. Install the Supabase CLI, log in, link your project, then deploy:
+## 1. Deploy the custom API
+1. Create a Cloudflare account and install Wrangler: `npm install`.
+2. From the repository root run `npx wrangler login`.
+3. Add provider keys as Worker secrets (never commit them):
    ```sh
-   supabase link --project-ref YOUR_PROJECT_REF
-   supabase functions deploy chat
-   supabase secrets set GEMINI_API_KEY=your_gemini_key OPENROUTER_API_KEY=your_openrouter_key
+   npx wrangler secret put GEMINI_API_KEY
+   npx wrangler secret put OPENROUTER_API_KEY
    ```
-   Add at least one provider key. Gemini is tried first in Auto mode; OpenRouter is the fallback.
-6. Run locally:
+   Add at least one provider key. Gemini is used first in Auto mode; OpenRouter is the fallback when Gemini returns an HTTP error.
+4. Deploy:
    ```sh
-   npm install
-   npm run dev
+   npx wrangler deploy
    ```
+5. Copy the Worker URL, usually `https://2elagpt-api.<your-subdomain>.workers.dev`.
 
-## API
-Endpoint: `POST https://YOUR_PROJECT.supabase.co/functions/v1/chat`
+Free-tier access, model availability, quotas, and pricing can change. Check each provider dashboard before use. The API gateway itself does not create free model inference.
 
-Headers: `Authorization: Bearer USER_ACCESS_TOKEN`, `apikey: SUPABASE_ANON_KEY`, `Content-Type: application/json`
+## 2. Connect the Android app
+Open 2ELAGPT > API setup and paste the Worker URL. The app saves it on the device. Do not paste provider keys into the app.
 
-Body:
+## 3. Build the APK
+Every push to `main` builds an Android debug APK in GitHub Actions. Open the latest successful run:
+https://github.com/cr07thegoat2025-cloud/2ELAGPT/actions
+Download the `2ELAGPT-Android-APK` artifact and extract the APK from the ZIP.
+
+## API contract
+`POST /chat`, JSON body:
 ```json
-{ "model": "auto", "messages": [{ "role": "user", "content": "Hello 2ELAGPT" }] }
+{ "model": "auto", "mode": "coding", "messages": [{ "role": "user", "content": "Hello 2ELAGPT" }] }
 ```
-Models: `auto`, `gemini-2.5-flash`, `openrouter/free`. Response is Server-Sent Events using OpenAI-style `choices[0].delta.content` chunks.
+Supported model choices: `auto`, `gemini-2.5-flash`, `openrouter/free`. Response is SSE with OpenAI-style `choices[0].delta.content` chunks.
 
-## Security notes
-- Provider API keys belong only in Supabase Edge Function secrets.
-- Never commit `.env.local`, provider keys, service-role keys, or access tokens.
-- The hosted chat endpoint requires a signed-in Supabase user.
-- The current rate limit is a starter per-user limit; production deployment should add atomic rate limiting and abuse monitoring.
-- Free provider availability, quotas, and model IDs can change. Check provider dashboards before relying on them.
-
-## GitHub Actions
-Every push to `main` runs the production Vite build and uploads `dist/` as the `2ELAGPT-web-v1` artifact. The workflow verifies frontend compilation; Supabase setup/deployment is a separate step.
+## Security and limitations
+- Provider keys are stored as Cloudflare Worker secrets and are not bundled into the app.
+- The Worker endpoint is public and this starter version has no account-based authentication or persistent cross-device chat sync. Add Cloudflare rate limiting/abuse protection before public release.
+- Chat history is local to each device/browser.
+- Do not commit API keys, tokens, or local environment files.
