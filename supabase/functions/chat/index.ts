@@ -21,8 +21,9 @@ serve(async (req) => {
   const db = createClient(supabaseUrl, serviceKey);
   const { data: userData, error: userError } = await createClient(supabaseUrl, anonKey).auth.getUser(token);
   if (userError || !userData.user) return json(401, { error: "Sign in is required to use the hosted API." });
-  const { data: usage } = await db.from("usage_events").select("id", { count: "exact", head: true }).eq("user_id", userData.user.id).gte("created_at", new Date(Date.now() - 60_000).toISOString());
-  if ((usage?.length ?? 0) >= 20) return json(429, { error: "Rate limit reached. Please wait a minute and try again." });
+  const { count: usageCount, error: usageError } = await db.from("usage_events").select("id", { count: "exact", head: true }).eq("user_id", userData.user.id).gte("created_at", new Date(Date.now() - 60_000).toISOString());
+  if (usageError) return json(503, { error: "Usage protection is temporarily unavailable. Please retry shortly." });
+  if ((usageCount ?? 0) >= 20) return json(429, { error: "Rate limit reached. Please wait a minute and try again." });
   let body: any;
   try { body = await req.json(); } catch { return json(400, { error: "Invalid JSON body." }); }
   const messages = Array.isArray(body.messages) ? body.messages : [];
