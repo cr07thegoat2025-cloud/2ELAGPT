@@ -28,7 +28,9 @@ jobs:
           python -m pip install --quiet pillow cairosvg
           python scripts/generate-android-icon.py
       - name: Generate Android project
-        run: npx cap add android
+        run: |
+          rm -rf android
+          npx cap add android
       - name: Sync web app into Android
         run: npx cap sync android
       - name: Build installable debug APK
