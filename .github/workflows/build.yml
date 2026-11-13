@@ -15,33 +15,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Set up Java
-        uses: actions/setup-java@v4
+          cache: npm
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
       - name: Install dependencies
         run: npm install
-      - name: Validate Supabase frontend configuration
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-        run: |
-          test -n "$VITE_SUPABASE_URL" || (echo "::error::Missing GitHub Actions secret VITE_SUPABASE_URL" && exit 1)
-          test -n "$VITE_SUPABASE_ANON_KEY" || (echo "::error::Missing GitHub Actions secret VITE_SUPABASE_ANON_KEY" && exit 1)
       - name: Build web app
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: npm run build
       - name: Generate Android project
         run: npx cap add android
       - name: Sync web app into Android
         run: npx cap sync android
-      - name: Build debug APK
+      - name: Build installable debug APK
         working-directory: android
         run: ./gradlew assembleDebug
-      - name: Upload installable APK
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: 2ELAGPT-Android-APK
