@@ -13,7 +13,7 @@ export default function App() {
   const [history, setHistory] = useState(readSaved);
   const [activeId, setActiveId] = useState(null);
   const [input, setInput] = useState("");
-  const [model, setModel] = useState("auto");
+  const [model, setModel] = useState("openrouter/free");
   const [codingMode, setCodingMode] = useState(false);
   const [modelOpen, setModelOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -65,7 +65,7 @@ export default function App() {
     e?.preventDefault();
     const text = input.trim();
     if (!text || busy) return;
-    if (!apiUrl) { setError("Connect your 2ELAGPT API first: open API setup and enter your deployed Worker URL."); setSettingsOpen(true); setApiDraft(apiUrl); return; }
+    if (!apiUrl) { setError("Connect your 2ELAGPT API first: open API setup and enter your Vercel deployment URL."); setSettingsOpen(true); setApiDraft(apiUrl); return; }
     setInput(""); setError("");
     const userMessage = { id: uid(), role: "user", content: text };
     const assistantMessage = { id: uid(), role: "assistant", content: "" };
@@ -73,7 +73,7 @@ export default function App() {
     setMessages(next); setBusy(true);
     const controller = new AbortController(); abortRef.current = controller;
     try {
-      const response = await fetch(apiUrl.endsWith("/chat") ? apiUrl : apiUrl + "/chat", {
+      const response = await fetch(apiUrl.endsWith("/api/chat") ? apiUrl : apiUrl + "/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: next.filter(m => m.id !== "welcome").map(({ role, content }) => ({ role, content })), model, mode: codingMode ? "coding" : "auto" }),
@@ -101,7 +101,7 @@ export default function App() {
           } catch (parseError) { if (parseError.message && !parseError.message.includes("JSON")) throw parseError; }
         }
       }
-      if (!answer) throw new Error("The AI returned an empty response. Check your provider key and quota in Cloudflare.");
+      if (!answer) throw new Error("The AI returned an empty response. Check OPENROUTER_API_KEY and your OpenRouter account quota.");
       const finalMessages = next.map(m => m.id === assistantMessage.id ? { ...m, content: answer } : m);
       setHistory(old => {
         const id = activeId || uid();
@@ -123,18 +123,18 @@ export default function App() {
       <div className="history-label">RECENT CHATS</div>
       <div className="history-list">{history.map(chat => <div className={"history-item " + (activeId === chat.id ? "selected" : "")} key={chat.id} onClick={() => loadChat(chat)}><MessageSquarePlus size={15}/><span>{chat.title}</span><button title="Delete chat" onClick={e => deleteChat(chat.id, e)}><Trash2 size={14}/></button></div>)}</div>
       <div className="sidebar-bottom">
-        <div className="plan-card"><div className="plan-icon"><Zap size={16}/></div><div><b>2ELAGPT V1</b><small>Gemini + OpenRouter AI</small></div><span className="online-dot"/></div>
+        <div className="plan-card"><div className="plan-icon"><Zap size={16}/></div><div><b>2ELAGPT V1</b><small>Powered by OpenRouter</small></div><span className="online-dot"/></div>
         <button className="profile-row" onClick={() => {setApiDraft(apiUrl);setSettingsOpen(true)}}><div className="avatar">2</div><div className="profile-copy"><b>Guest session</b><small>{apiUrl ? "API configured" : "Connect AI backend"}</small></div><Settings2 size={17}/></button>
       </div>
     </aside>
     <main className="main-panel">
-      <header className="topbar"><div className="top-left"><button className="icon-btn" onClick={() => setSidebarOpen(!sidebarOpen)} aria-label="Toggle sidebar"><Menu size={19}/></button><span className="top-brand">2ELA<span>GPT</span></span><button className={"model-button " + (codingMode ? "coding-active" : "")} onClick={() => setCodingMode(v => !v)} title="Toggle specialist coding mode">{codingMode ? "{ } Coding ON" : "{ } Coding"}</button><div className="model-wrap"><button className="model-button" onClick={() => setModelOpen(!modelOpen)}>{model === "auto" ? "Auto" : model === "gemini-2.5-flash" ? "Gemini Flash" : "OpenRouter Free"} <ChevronDown size={14}/></button>{modelOpen && <div className="model-menu"><button onClick={() => {setModel("auto");setModelOpen(false)}}><Sparkles size={15}/> Auto <small>Recommended</small></button><button onClick={() => {setModel("gemini-2.5-flash");setModelOpen(false)}}><Bot size={15}/> Gemini Flash</button><button onClick={() => {setModel("openrouter/free");setModelOpen(false)}}><Zap size={15}/> OpenRouter Free</button></div>}</div></div><div className="top-actions"><span className="provider-label"><i/> {provider}</span><button className="upgrade-btn" onClick={() => {setApiDraft(apiUrl);setSettingsOpen(true)}}>API setup</button></div></header>
+      <header className="topbar"><div className="top-left"><button className="icon-btn" onClick={() => setSidebarOpen(!sidebarOpen)} aria-label="Toggle sidebar"><Menu size={19}/></button><span className="top-brand">2ELA<span>GPT</span></span><button className={"model-button " + (codingMode ? "coding-active" : "")} onClick={() => setCodingMode(v => !v)} title="Toggle specialist coding mode">{codingMode ? "{ } Coding ON" : "{ } Coding"}</button><div className="model-wrap"><button className="model-button" onClick={() => setModelOpen(!modelOpen)}>{model === "auto" ? "Auto" : "OpenRouter Free"} <ChevronDown size={14}/></button>{modelOpen && <div className="model-menu"><button onClick={() => {setModel("auto");setModelOpen(false)}}><Sparkles size={15}/> Auto <small>Recommended</small></button><button onClick={() => {setModel("openrouter/free");setModelOpen(false)}}><Zap size={15}/> OpenRouter Free</button></div>}</div></div><div className="top-actions"><span className="provider-label"><i/> {provider}</span><button className="upgrade-btn" onClick={() => {setApiDraft(apiUrl);setSettingsOpen(true)}}>API setup</button></div></header>
       <section className="chat-scroll">
         {messages.length === 1 && messages[0].id === "welcome" ? <div className="welcome"><div className="welcome-orb"><Sparkles size={27}/></div><div className="eyebrow">A NEW KIND OF ASSISTANT</div><h1>Your intelligence.<br/><em>Without limits.</em></h1><p>Ideas in. Possibilities out. Meet your new thinking partner.</p><div className="suggestion-grid">{suggestions.map(([icon, label]) => <button key={label} onClick={() => setInput(label)}><span>{icon === "Code" ? "{ }" : icon === "Pen" ? "✎" : icon === "Rocket" ? "↗" : "✧"}</span>{label}<ArrowUp size={14}/></button>)}</div></div> :
         <div className="messages">{messages.filter(m => m.id !== "welcome").map(m => <article className={"message " + m.role} key={m.id}><div className="message-avatar">{m.role === "assistant" ? <div className="mini-mark">2</div> : "Y"}</div><div className="message-body"><div className="message-name">{m.role === "assistant" ? "2ELAGPT" : "You"}</div><div className="markdown"><ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content || (busy ? " " : "")}</ReactMarkdown></div>{m.role === "assistant" && m.content && <button className="copy-btn" onClick={() => navigator.clipboard?.writeText(m.content)}><Copy size={13}/> Copy</button>}</div></article>)}{busy && <div className="thinking"><span/><span/><span/> 2ELAGPT is thinking</div>}<div ref={endRef}/></div>}
       </section>
       <div className="composer-area">{error && <div className="error-banner"><span>{error}</span><button onClick={() => setError("")}><X size={15}/></button></div>}<form className="composer" onSubmit={sendMessage}><textarea value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => {if (e.key === "Enter" && !e.shiftKey) {e.preventDefault();sendMessage();}}} placeholder="Message 2ELAGPT..." rows={1}/>{busy ? <button className="send-btn stop-btn" type="button" onClick={stop}>■</button> : <button className="send-btn" type="submit" disabled={!input.trim()}><ArrowUp size={19}/></button>}</form><div className="composer-note">2ELAGPT can make mistakes. Verify important information. <span>V1.0</span></div></div>
     </main>
-    {settingsOpen && <div className="modal-backdrop" onClick={() => setSettingsOpen(false)}><div className="modal setup-modal" onClick={e => e.stopPropagation()}><button className="modal-x" onClick={() => setSettingsOpen(false)}><X/></button><div className="modal-logo"><Settings2/></div><h2>Connect 2ELAGPT AI</h2><p>Paste your deployed 2ELAGPT Cloudflare Worker address. It should look like https://your-worker.your-subdomain.workers.dev</p><label>2ELAGPT API URL<input type="url" value={apiDraft} onChange={e => setApiDraft(e.target.value)} placeholder="https://your-worker.workers.dev"/></label><button className="modal-submit" onClick={saveApi}>Save API address</button><div className="setup-step"><b>Provider keys stay private</b><span>Gemini and OpenRouter keys belong in Cloudflare Worker secrets, never in this app.</span></div><a className="docs-link" href="https://dash.cloudflare.com/" target="_blank" rel="noreferrer">Open Cloudflare dashboard ↗</a></div></div>}
+    {settingsOpen && <div className="modal-backdrop" onClick={() => setSettingsOpen(false)}><div className="modal setup-modal" onClick={e => e.stopPropagation()}><button className="modal-x" onClick={() => setSettingsOpen(false)}><X/></button><div className="modal-logo"><Settings2/></div><h2>Connect 2ELAGPT AI</h2><p>Paste your 2ELAGPT Vercel deployment address. It should look like https://your-project.vercel.app</p><label>Vercel deployment URL<input type="url" value={apiDraft} onChange={e => setApiDraft(e.target.value)} placeholder="https://your-project.vercel.app"/></label><button className="modal-submit" onClick={saveApi}>Save API address</button><div className="setup-step"><b>Your OpenRouter key stays private</b><span>Add OPENROUTER_API_KEY in Vercel Project Settings → Environment Variables. Never put the key in this app.</span></div><a className="docs-link" href="https://vercel.com/dashboard" target="_blank" rel="noreferrer">Open Vercel dashboard ↗</a></div></div>}
   </div>;
 }
