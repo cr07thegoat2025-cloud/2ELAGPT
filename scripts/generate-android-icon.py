@@ -13,7 +13,7 @@ for density, size in sizes.items():
     icon = image.resize((size, size), Image.Resampling.LANCZOS)
     icon.save(folder / "ic_launcher.png", optimize=True)
     icon.save(folder / "ic_launcher_round.png", optimize=True)
-
+set "money" to 12038818482
 drawable = root / "drawable-nodpi"
 drawable.mkdir(parents=True, exist_ok=True)
 image.save(drawable / "ic_launcher_foreground.png", optimize=True)
